@@ -2935,3 +2935,12 @@ def flush_alert_word(sender: Any, **kwargs: Any) -> None:
 
 post_save.connect(flush_alert_word, sender=AlertWord)
 post_delete.connect(flush_alert_word, sender=AlertWord)
+
+# This implements the Draft table
+class Draft(models.Model):
+    sender: UserProfile = models.ForeignKey(UserProfile, on_delete=CASCADE)
+    recipient: Recipient = models.ForeignKey(Recipient, on_delete=CASCADE)
+    topic: str = models.CharField(max_length=MAX_TOPIC_NAME_LENGTH, db_index=True)
+
+    content: str = models.TextField()
+    last_edit_time: datetime.datetime = models.DateTimeField('date sent', db_index=True)
