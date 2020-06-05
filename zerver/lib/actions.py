@@ -92,7 +92,7 @@ from zerver.lib.user_status import (
 )
 from zerver.lib.user_groups import create_user_group, access_user_group_by_id
 
-from zerver.models import Realm, RealmEmoji, Stream, UserProfile, UserActivity, \
+from zerver.models import Draft, Realm, RealmEmoji, Stream, UserProfile, UserActivity, \
     RealmDomain, Service, SubMessage, \
     Subscription, Recipient, Message, Attachment, UserMessage, RealmAuditLog, \
     UserHotspot, MultiuseInvite, ScheduledMessage, UserStatus, \
@@ -147,6 +147,7 @@ from zerver.lib.utils import log_statsd_event, statsd
 from zerver.lib.i18n import get_language_name
 from zerver.lib.alert_words import add_user_alert_words, \
     remove_user_alert_words
+from zerver.lib.drafts import add_user_draft_messages
 from zerver.lib.email_notifications import enqueue_welcome_emails
 from zerver.lib.exceptions import JsonableError, ErrorCode, BugdownRenderingException
 from zerver.lib.sessions import delete_user_sessions
@@ -5198,6 +5199,9 @@ def notify_alert_words(user_profile: UserProfile, words: Iterable[str]) -> None:
 def do_add_alert_words(user_profile: UserProfile, alert_words: Iterable[str]) -> None:
     words = add_user_alert_words(user_profile, alert_words)
     notify_alert_words(user_profile, words)
+
+def do_add_message_draft(draft: Draft) -> None:
+    add_user_draft_messages(draft)
 
 def do_remove_alert_words(user_profile: UserProfile, alert_words: Iterable[str]) -> None:
     words = remove_user_alert_words(user_profile, alert_words)

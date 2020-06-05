@@ -20,6 +20,7 @@ import zerver.views.auth
 import zerver.views.archive
 import zerver.views.camo
 import zerver.views.compatibility
+import zerver.views.drafts
 import zerver.views.home
 import zerver.views.email_mirror
 import zerver.views.registration
@@ -328,6 +329,13 @@ v1_api_and_json_patterns = [
     url(r'^users/me/(?P<stream_id>\d+)/topics$', rest_dispatch,
         {'GET': 'zerver.views.streams.get_topics_backend'}),
 
+    # users/me/drafts -> zerver.views.drafts
+    url(r'^users/me/drafts$', rest_dispatch,
+        {'POST': 'zerver.views.drafts.add_message_draft'}),
+
+    url(r'^users/me/drafts/(?P<draft_message_id>\d+)$', rest_dispatch,
+        {'PATCH': 'zerver.views.drafts.update_message_draft',
+         'DELETE': 'zerver.views.drafts.remove_message_draft'}),
 
     # streams -> zerver.views.streams
     # (this API is only used externally)

@@ -26,6 +26,25 @@ const draft_model = (function () {
         ls.set(KEY, drafts);
     }
 
+    function add_new_draft(draft) {
+
+        channel.post({
+            url: '/json/users/me/drafts',
+            data: {
+                message_type: draft.type,
+                message_content: draft.content,
+                last_edit_time: draft.updatedAt,
+                private_message_recipient: JSON.stringify(draft.private_message_recipient),
+                stream: draft.stream,
+                topic: draft.topic,
+            },
+            success: function(draft_message_id) {
+            },
+            error: function() {
+            },
+        });
+    }
+
     exports.addDraft = function (draft) {
         const drafts = get();
 
@@ -36,6 +55,8 @@ const draft_model = (function () {
         draft.updatedAt = getTimestamp();
         drafts[id] = draft;
         save(drafts);
+
+        add_new_draft(draft);
 
         return id;
     };
