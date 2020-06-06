@@ -77,6 +77,7 @@ run_test('get_editability', () => {
         realm_message_content_edit_limit_seconds: 0,
         is_admin: false,
     };
+    // You can still edit the topic of a message, you didn't send (within the time limit).
     message.timestamp = current_timestamp - 60;
     assert.equal(get_editability(message), editability_types.TOPIC_ONLY);
 
@@ -85,18 +86,22 @@ run_test('get_editability', () => {
 
     message.sent_by_me = true;
     global.page_params.realm_allow_community_topic_editing = false;
+    // You can edit the topic of message you sent, anytime.
     assert.equal(message_edit.is_topic_editable(message), true);
 
     message.sent_by_me = false;
     global.page_params.realm_allow_community_topic_editing = false;
+    // Realm settings prevents community users from editing topic.
     assert.equal(message_edit.is_topic_editable(message), false);
 
     message.sent_by_me = false;
     global.page_params.realm_allow_community_topic_editing = false;
     global.page_params.is_admin = true;
+    // Organization admins can edit message topics indefinitely.
     assert.equal(message_edit.is_topic_editable(message), true);
 
     global.page_params.realm_allow_message_editing = false;
+    // Realm message editing setting prevents editing topics as well.
     assert.equal(message_edit.is_topic_editable(message), false);
 });
 
