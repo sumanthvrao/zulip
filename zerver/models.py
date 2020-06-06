@@ -571,7 +571,7 @@ class RealmDomain(models.Model):
 # These functions should only be used on email addresses that have
 # been validated via django.core.validators.validate_email
 #
-# Note that we need to use some care, since can you have multiple @-signs; e.g.
+# Note that we need to use some care, since can you have multiple @-signs; e.
 # "tabbott@test"@zulip.com
 # is valid email address
 def email_to_username(email: str) -> str:

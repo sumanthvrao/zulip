@@ -75,6 +75,7 @@ run_test('get_editability', () => {
         realm_allow_community_topic_editing: true,
         realm_allow_message_editing: true,
         realm_message_content_edit_limit_seconds: 0,
+        realm_message_topic_edit_limit_seconds: 86400,
         is_admin: false,
     };
     // You can still edit the topic of a message, you didn't send (within the time limit).
@@ -103,6 +104,14 @@ run_test('get_editability', () => {
     global.page_params.realm_allow_message_editing = false;
     // Realm message editing setting prevents editing topics as well.
     assert.equal(message_edit.is_topic_editable(message), false);
+
+    message.timestamp = current_timestamp - 85350
+    // 86350 + 60 > 86400, so the topic can't be edited.
+    assert.equal(message_edit.is_topic_editable(message, 60), false)
+
+    // 85350 < 86400 so message is still editable.
+    assert.equal(message_edit.is_topic_editable(message), true)
+
 });
 
 run_test('get_deletability', () => {

@@ -144,6 +144,7 @@ def fetch_initial_state_data(user_profile: UserProfile,
         state['realm_authentication_methods'] = realm.authentication_methods_dict()
         state['realm_allow_message_editing'] = realm.allow_message_editing
         state['realm_allow_community_topic_editing'] = realm.allow_community_topic_editing
+        state['realm_message_topic_edit_limit_seconds'] = realm.message_topic_edit_limit_seconds
         state['realm_allow_message_deleting'] = realm.allow_message_deleting
         state['realm_message_content_edit_limit_seconds'] = realm.message_content_edit_limit_seconds
         state['realm_message_content_delete_limit_seconds'] = realm.message_content_delete_limit_seconds
