@@ -931,7 +931,16 @@ paths:
           type: boolean
           default: true
         example: true
-      - $ref: '#/components/parameters/Content'
+      - name: content
+        in: query
+        description: |
+          The content of the message. Maximum message size of 10000 bytes.
+
+          **Note**: This is only necessary for content updates and not topic-only updates.
+        schema:
+          type: string
+        example: Hello
+        required: false
       - $ref: '#/components/parameters/StreamIdInQuery'
       responses:
         '200':
