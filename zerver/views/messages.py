@@ -1606,6 +1606,17 @@ def update_message_backend(request: HttpRequest, user_profile: UserMessage,
         topic_name = topic_name.strip()
         if topic_name == "":
             raise JsonableError(_("Topic can't be empty"))
+    # If this is a topic-only edit and there is no change in topic
+    # We raise a json_error claiming nothing to change.
+    new_topic = topic_name.strip()
+    new_content = content.strip()
+    old_topic = message.topic_name()
+    old_content = message.content
+    # if topic_name is not None and content is None:
+    #     topic_name = topic_name.strip()
+    #     if message.topic_name() == topic_name:
+    #         raise JsonableError(_("New topic same as old topic"))
+    # elif content is not None and topic_name is None:
     rendered_content = None
     links_for_embed: Set[str] = set()
     prior_mention_user_ids: Set[int] = set()
