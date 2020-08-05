@@ -12,6 +12,8 @@ below features are supported.
 
 **Feature Level 30**
 
+* `POST /invites`: Now returns the anonymous email along with other
+  parameters when an error occurs, indicating not all users were invited.
 * [`GET users/me/subscriptions`](/api/get-subscriptions), [`GET
   /streams`](/api/get-streams): Added `date_created` to Stream
   objects.
