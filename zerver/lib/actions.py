@@ -1916,6 +1916,7 @@ def ensure_stream(realm: Realm,
                   invite_only: bool=False,
                   stream_description: str="",
                   acting_user: Optional[UserProfile]=None) -> Stream:
+    # who calls this?
     return create_stream_if_needed(realm, stream_name,
                                    invite_only=invite_only,
                                    stream_description=stream_description,
@@ -3654,6 +3655,10 @@ def do_rename_stream(stream: Stream,
     return {"email_address": new_email}
 
 def do_change_stream_description(stream: Stream, new_description: str) -> None:
+    if new_description.strip() == '':
+        raise JsonableError(_(
+                "Stream description cannot be empty",
+            ))
     stream.description = new_description
     stream.rendered_description = render_stream_description(new_description)
     stream.save(update_fields=['description', 'rendered_description'])

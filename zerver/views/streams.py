@@ -290,6 +290,8 @@ def list_subscriptions_backend(
 
 FuncKwargPair = Tuple[Callable[..., HttpResponse], Dict[str, Union[int, Iterable[Any]]]]
 
+# Confirm if this has to be changed. I don't think so since a user can only want to update
+# description / color of a stream and this backend is used.
 add_subscriptions_schema = check_list(
     check_dict_only(
         required_keys=[

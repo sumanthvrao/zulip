@@ -453,12 +453,15 @@ def list_to_streams(streams_raw: Iterable[Mapping[str, Any]],
     existing_stream_map = bulk_get_streams(user_profile.realm, stream_set)
 
     message_retention_days_not_none = False
+    missing_stream_description = False
     for stream_dict in streams_raw:
         stream_name = stream_dict["name"]
         stream = existing_stream_map.get(stream_name.lower())
         if stream is None:
             if stream_dict.get('message_retention_days', None) is not None:
                 message_retention_days_not_none = True
+            if stream_dict.get('description', None) is None:
+                missing_stream_description = True
             missing_stream_dicts.append(stream_dict)
         else:
             existing_streams.append(stream)
@@ -479,6 +482,10 @@ def list_to_streams(streams_raw: Iterable[Mapping[str, Any]],
             if not user_profile.is_realm_owner:
                 raise JsonableError(_('User cannot create stream with this settings.'))
             user_profile.realm.ensure_not_on_limited_plan()
+
+        # We don't allow streams to be created without a stream description
+        if missing_stream_description:
+            raise JsonableError(_('Streams cannot be created without a stream description'))
 
         # We already filtered out existing streams, so dup_streams
         # will normally be an empty list below, but we protect against somebody
