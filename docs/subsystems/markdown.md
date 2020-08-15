@@ -181,12 +181,12 @@ mistakes, you don't want to be doing that often.  There are basically
   that you wrote to your team and passed it through your Markdown
   implementation, would you need to change the text of your email for it
   to render in a reasonable way?  This is the "accidental Markdown
-  syntax" problem, common with Markdown syntax like the italics syntax
-  interacting with talking about `char *`s.
+  syntax" problem, common with Markdown syntax like the italics syntax `*`
+  interacting with text like `char *`.
 
 * What fraction of the time do users attempting to use a particular
-  Markdown syntax actually succeed at doing so correctly?  Syntax like
-  required a blank line between text and the start of a bulleted list
+  Markdown syntax actually succeed at doing so correctly?  Syntax which
+  require a blank line between text and the start of a bulleted list
   raise this figure substantially.
 
 Both of these are minor issues for most products using Markdown, but

@@ -204,7 +204,7 @@ class OuterHandler(BaseHandler):
         check_for_new_fence(self.processor, self.output, line,
                             self.run_content_validators, self.default_language)
 
-    def done(self) -> None:
+    def assume_closing_tag(self) -> None:
         self.processor.pop()
 
 class CodeHandler(BaseHandler):
@@ -218,10 +218,14 @@ class CodeHandler(BaseHandler):
         self.run_content_validators = run_content_validators
 
     def handle_line(self, line: str) -> None:
+        # if it's a quote ~~~, what to do?
         if line.rstrip() == self.fence:
             self.done()
+        elif line.rstrip() == "~~~":
+            self.done()
         else:
-            self.lines.append(line.rstrip())
+            check_for_new_fence(self.processor, self.lines, line.rstrip())
+            # self.lines.append(line.rstrip())
 
     def done(self) -> None:
         text = '\n'.join(self.lines)
@@ -238,6 +242,9 @@ class CodeHandler(BaseHandler):
         self.output.extend(processed_lines)
         self.output.append('')
         self.processor.pop()
+
+    def assume_closing_tag(self) -> None:
+        self.handle_line(self.fence)
 
 class QuoteHandler(BaseHandler):
     def __init__(self, processor: Any, output: MutableSequence[str],
@@ -263,6 +270,8 @@ class QuoteHandler(BaseHandler):
         self.output.append('')
         self.processor.pop()
 
+    def assume_closing_tag(self) -> None:
+        self.handle_line(self.fence)
 
 class SpoilerHandler(BaseHandler):
     def __init__(self, processor: Any, output: MutableSequence[str],
@@ -294,6 +303,9 @@ class SpoilerHandler(BaseHandler):
         self.output.append('')
         self.processor.pop()
 
+    def assume_closing_tag(self) -> None:
+        self.handle_line(self.fence)
+
 class TexHandler(BaseHandler):
     def __init__(self, processor: Any, output: MutableSequence[str], fence: str) -> None:
         self.processor = processor
@@ -317,6 +329,8 @@ class TexHandler(BaseHandler):
         self.output.append('')
         self.processor.pop()
 
+    def assume_closing_tag(self) -> None:
+        self.handle_line(self.fence)
 
 class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
     def __init__(self, md: markdown.Markdown, run_content_validators: bool=False) -> None:
@@ -352,7 +366,11 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
             self.handlers[-1].handle_line(line)
 
         while self.handlers:
-            self.handlers[-1].done()
+            '''
+            At this point we'll probably have one or more unclosed tags remaining.
+            We assume they have closing tags before finishing up.
+            '''
+            self.handlers[-1].assume_closing_tag()
 
         # This fiddly handling of new lines at the end of our output was done to make
         # existing tests pass. Markdown is just kind of funny when it comes to new lines,

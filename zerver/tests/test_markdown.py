@@ -186,6 +186,46 @@ class FencedBlockPreprocessorTest(ZulipTestCase):
         lines = processor.run(markdown_input)
         self.assertEqual(lines, expected)
 
+    def test_nested_unclosed_code(self) -> None:
+        processor = SimulatedFencedBlockPreprocessor(None)
+        markdown_input = [
+            '~~~ quote',
+            'hi',
+            '```',
+            'inside quote',
+            '~~~',
+            'outside quote'
+        ]
+        expected = [
+            '',
+            '> hi',
+            '',
+            '> **:inside quote**',
+            '',
+            'outside quote',
+            '',
+            '',
+        ]
+        lines = processor.run(markdown_input)
+        print(lines)
+        self.assertEqual(lines, expected)
+
+    def test_unclosed_code(self) -> None:
+        processor = SimulatedFencedBlockPreprocessor(None)
+        markdown_input = [
+            'hi',
+            '```',
+            'inside quote',
+        ]
+        expected = [
+            'hi',
+            '',
+            '**:inside quote**',
+            '',
+            '',
+        ]
+        lines = processor.run(markdown_input)
+        self.assertEqual(lines, expected)
 def markdown_convert_wrapper(content: str) -> str:
     return markdown_convert(
         content=content,
@@ -2201,3 +2241,6 @@ class MarkdownErrorTests(ZulipTestCase):
 
         result = processor.run(markdown_input)
         self.assertEqual(result, expected)
+
+if __name__ == "__main__":
+    test_nested_unclosed_code()
