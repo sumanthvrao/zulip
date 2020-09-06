@@ -320,3 +320,36 @@ exports.all_notifications = () => ({
         enable_online_push_notifications: !page_params.realm_push_notifications_enabled,
     },
 });
+
+const map_language_to_playground_info = {
+    // TODO: This is being hardcoded just for the prototype, post which we should
+    // add support for realm admins to configure their own choices. The keys here
+    // are the pygment lexer subclass names for the different language alias it
+    // supports.
+    Rust: {
+        name: "Rust playground",
+        url_pattern: "https://play.rust-lang.org/?code=",
+    },
+    Julia: {
+        name: "Julia playground",
+        url_pattern: "https://repl.it/languages/julia/?code=",
+    },
+    Python: {
+        name: "Python 3.x playground",
+        url_pattern: "https://repl.it/languages/python3/?code=",
+    },
+    "Python 2.x": {
+        name: "Python 2.x playground",
+        url_pattern: "https://repl.it/languages/python/?code=",
+    },
+    JavaScript: {
+        name: "Javascript playground",
+        url_pattern: "https://repl.it/languages/javascript/?code=",
+    },
+    Lean: {
+        name: "Lean playground",
+        url_pattern: "https://leanprover-community.github.io/lean-web-editor/#code=",
+    },
+};
+
+exports.get_playground_info_for_languages = (lang) => map_language_to_playground_info[lang];
