@@ -827,6 +827,35 @@ def flush_per_request_caches() -> None:
     global per_request_realm_filters_cache
     per_request_realm_filters_cache = {}
 
+class RealmPlayground(models.Model):
+    """ Server side storage model to store playground information needed by our
+    'view code in playground' feature in code blocks.
+    """
+    MAX_PLAYGROUND_NAME_LENGTH = 60
+    MAX_PYGMENTS_LANGUAGE_LENGTH = 40
+
+    realm: Realm = models.ForeignKey(Realm, on_delete=CASCADE)
+    url_prefix: str = models.TextField(validators=[URLValidator()])
+
+    # User-visible display name used when configuring playgrounds in the settings page and
+    # displaying them in the playground links popover.
+    name: str = models.CharField(db_index=True, max_length=MAX_PLAYGROUND_NAME_LENGTH)
+
+    # This stores the pygments lexer subclass names and not the aliases themselves.
+    pygments_language: str = models.CharField(
+        db_index=True,
+        max_length=MAX_PYGMENTS_LANGUAGE_LENGTH,
+        # We validate to see if this conforms to the character set allowed for a
+        # language in the code block.
+        validators=[RegexValidator(regex=r'^[ a-zA-Z0-9_+-./#]*$',
+                                   message=_("Invalid characters in pygments language"))])
+
+    class Meta:
+        unique_together = (("realm", "name"),)
+
+    def __str__(self) -> str:
+        return f"<RealmPlayground({self.realm.string_id}): {self.pygments_language} {self.name}>"
+
 # The Recipient table is used to map Messages to the set of users who
 # received the message.  It is implemented as a set of triples (id,
 # type_id, type). We have 3 types of recipients: Huddles (for group

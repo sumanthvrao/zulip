@@ -359,7 +359,8 @@ def build_realm(zerver_realm: List[ZerverFieldsT], realm_id: int,
                  zerver_useractivityinterval=[],
                  zerver_reaction=[],
                  zerver_realmemoji=[],
-                 zerver_realmfilter=[])
+                 zerver_realmfilter=[],
+                 zerver_realmplayground=[])
     return realm
 
 def build_usermessages(zerver_usermessage: List[ZerverFieldsT],

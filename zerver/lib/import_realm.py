@@ -52,6 +52,7 @@ from zerver.models import (
     RealmDomain,
     RealmEmoji,
     RealmFilter,
+    RealmPlayground,
     Recipient,
     Service,
     Stream,
@@ -72,7 +73,8 @@ from zerver.models import (
 realm_tables = [("zerver_defaultstream", DefaultStream, "defaultstream"),
                 ("zerver_realmemoji", RealmEmoji, "realmemoji"),
                 ("zerver_realmdomain", RealmDomain, "realmdomain"),
-                ("zerver_realmfilter", RealmFilter, "realmfilter")]  # List[Tuple[TableName, Any, str]]
+                ("zerver_realmfilter", RealmFilter, "realmfilter"),
+                ("zerver_realmplayground", RealmPlayground, "realmplayground")]  # List[Tuple[TableName, Any, str]]
 
 
 # ID_MAP is a dictionary that maps table names to dictionaries
@@ -98,6 +100,7 @@ ID_MAP: Dict[str, Dict[int, int]] = {
     'realmemoji': {},
     'realmdomain': {},
     'realmfilter': {},
+    'realmplayground': {},
     'message': {},
     'user_presence': {},
     'useractivity': {},
