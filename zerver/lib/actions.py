@@ -5637,6 +5637,9 @@ def do_add_realm_playground(realm: Realm, playground_info: Dict[str, str]) -> in
     realm_playground.save()
     return realm_playground.id
 
+def do_remove_realm_playground(realm: Realm, playground_id: int) -> None:
+    RealmPlayground.objects.filter(realm=realm, id=playground_id).delete()
+
 def get_occupied_streams(realm: Realm) -> QuerySet:
     # TODO: Make a generic stub for QuerySet
     """ Get streams with subscribers """

@@ -120,7 +120,7 @@ from zerver.views.realm_export import delete_realm_export, export_realm, get_rea
 from zerver.views.realm_filters import create_filter, delete_filter, list_filters
 from zerver.views.realm_icon import delete_icon_backend, get_icon_backend, upload_icon
 from zerver.views.realm_logo import delete_logo_backend, get_logo_backend, upload_logo
-from zerver.views.realm_playgrounds import add_realm_playground
+from zerver.views.realm_playgrounds import add_realm_playground, delete_realm_playground
 from zerver.views.registration import (
     accounts_home,
     accounts_home_from_multiuse_invite,
@@ -291,6 +291,8 @@ v1_api_and_json_patterns = [
     # realm/playgrounds -> zerver.views.realm_playgrounds
     rest_path('realm/playgrounds',
               POST=add_realm_playground),
+    rest_path('realm/playgrounds/<int:playground_id>',
+              DELETE=delete_realm_playground),
 
     # realm/profile_fields -> zerver.views.custom_profile_fields
     rest_path('realm/profile_fields',
