@@ -285,6 +285,10 @@ class OpenAPIArgumentsTest(ZulipTestCase):
         '/realm/deactivate',
         '/realm/subdomain/{subdomain}',
 
+        # TODO: We do intend to document this once the feature is complete.
+        '/realm/playgrounds',
+        '/realm/playgrounds/{playground_id}',
+
         #### Other low value endpoints
         # Used for dead desktop app to test connectivity.  To delete.
         '/generate_204',

@@ -192,6 +192,7 @@ from zerver.models import (
     RealmDomain,
     RealmEmoji,
     RealmFilter,
+    RealmPlayground,
     Recipient,
     ScheduledEmail,
     ScheduledMessage,
@@ -5629,6 +5630,12 @@ def do_remove_realm_domain(realm_domain: RealmDomain, acting_user: Optional[User
         do_set_realm_property(realm, 'emails_restricted_to_domains', False, acting_user=acting_user)
     event = dict(type="realm_domains", op="remove", domain=domain)
     send_event(realm, event, active_user_ids(realm.id))
+
+def do_add_realm_playground(realm: Realm, playground_info: Dict[str, str]) -> int:
+    realm_playground = RealmPlayground(realm=realm, **playground_info)
+    realm_playground.full_clean()
+    realm_playground.save()
+    return realm_playground.id
 
 def get_occupied_streams(realm: Realm) -> QuerySet:
     # TODO: Make a generic stub for QuerySet
