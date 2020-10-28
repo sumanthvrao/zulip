@@ -2354,6 +2354,38 @@ paths:
                             - type: object
                               additionalProperties: false
                               description: |
+                                Event sent to all users in a Zulip organization when the
+                                set of configured playgrounds for the organization has changed.
+                              properties:
+                                id:
+                                  type: integer
+                                type:
+                                  type: string
+                                  enum:
+                                    - realm_playgrounds
+                                realm_playgrounds:
+                                  type: array
+                                  description: |
+                                    An array of dictionaries where each dictionary contains
+                                    data about a single playground entry.
+                                  items:
+                                    $ref: "#/components/schemas/RealmPlayground"
+                              example:
+                                {
+                                  "type": "realm_playgrounds",
+                                  "realm_playgrounds":
+                                    [
+                                      {
+                                        "name": "Python playground",
+                                        "pygments_language": "Python",
+                                        "url_prefix": "https://python.example.com",
+                                      },
+                                    ],
+                                  "id": 0,
+                                }
+                            - type: object
+                              additionalProperties: false
+                              description: |
                                 Event sent to all users in a Zulip organization when
                                 a [custom emoji](/help/add-custom-emoji) has been updated,
                                 typically when it has been deactivated.
@@ -6047,6 +6079,15 @@ paths:
                           The second element is the URL with which the
                           pattern matching string should be linkified with and the third element
                           is the id of the realm filter.
+                      realm_playgrounds:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/RealmPlayground"
+                        description: |
+                          Present if `realm_playgrounds` is present in `fetch_event_types`.
+
+                          An array of dictionaries where each dictionary describes a playground entry
+                          in this Zulip organization.
                       realm_user_groups:
                         type: array
                         items:
@@ -9126,6 +9167,25 @@ components:
           type: boolean
           description: |
             Whether subdomains are allowed for this domain.
+    RealmPlayground:
+      type: object
+      additionalProperties: false
+      description: |
+        Object containing details about a realm playground.
+      properties:
+        name:
+          type: string
+          description: |
+            The name of the playground.
+        pygments_language:
+          type: string
+          description: |
+            The name of the Pygments language lexer for that
+            programming language.
+        url_prefix:
+          type: string
+          description: |
+            The url prefix for the playground.
     RealmExport:
       type: object
       additionalProperties: false

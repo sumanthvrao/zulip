@@ -221,6 +221,7 @@ from zerver.models import (
     get_huddle_recipient,
     get_huddle_user_ids,
     get_old_unclaimed_attachments,
+    get_realm_playgrounds,
     get_stream,
     get_stream_by_id_in_realm,
     get_stream_cache_key,
@@ -5631,14 +5632,20 @@ def do_remove_realm_domain(realm_domain: RealmDomain, acting_user: Optional[User
     event = dict(type="realm_domains", op="remove", domain=domain)
     send_event(realm, event, active_user_ids(realm.id))
 
+def notify_realm_playgrounds(realm: Realm) -> None:
+    event = dict(type="realm_playgrounds", realm_playgrounds=get_realm_playgrounds(realm))
+    send_event(realm, event, active_user_ids(realm.id))
+
 def do_add_realm_playground(realm: Realm, playground_info: Dict[str, str]) -> int:
     realm_playground = RealmPlayground(realm=realm, **playground_info)
     realm_playground.full_clean()
     realm_playground.save()
+    notify_realm_playgrounds(realm)
     return realm_playground.id
 
 def do_remove_realm_playground(realm: Realm, playground_id: int) -> None:
     RealmPlayground.objects.filter(realm=realm, id=playground_id).delete()
+    notify_realm_playgrounds(realm)
 
 def get_occupied_streams(realm: Realm) -> QuerySet:
     # TODO: Make a generic stub for QuerySet
