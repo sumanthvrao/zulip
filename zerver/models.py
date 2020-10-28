@@ -856,6 +856,16 @@ class RealmPlayground(models.Model):
     def __str__(self) -> str:
         return f"<RealmPlayground({self.realm.string_id}): {self.pygments_language} {self.name}>"
 
+def get_realm_playgrounds(realm: Realm) -> List[Dict[str, str]]:
+    playgrounds: List[Dict[str, str]] = []
+    for playground in RealmPlayground.objects.filter(realm=realm).all():
+        playgrounds.append(dict(
+            name=playground.name,
+            pygments_language=playground.pygments_language,
+            url_prefix=playground.url_prefix
+        ))
+    return playgrounds
+
 # The Recipient table is used to map Messages to the set of users who
 # received the message.  It is implemented as a set of triples (id,
 # type_id, type). We have 3 types of recipients: Huddles (for group
