@@ -73,6 +73,15 @@ exports.post_hotspot_as_read = function (hotspot_name) {
     });
 };
 
+exports.reset_all_hotspots = function () {
+    channel.post({
+        url: "/json/users/me/reset_hotspots",
+        error(err) {
+            blueslip.error(err.responseText);
+        },
+    });
+};
+
 function place_icon(hotspot) {
     const element = $(hotspot.location.element);
     const icon = $("#hotspot_" + hotspot.name + "_icon");
@@ -286,6 +295,13 @@ exports.load_new = function (new_hotspots) {
 
 exports.initialize = function () {
     exports.load_new(page_params.hotspots);
+
+    $("body").on("click", "#restart_tutorial", (e) => {
+        e.stopPropagation();
+        page_params.hotspots = [];
+        exports.reset_all_hotspots();
+        gear_menu.close();
+    });
 };
 
 window.hotspots = exports;
