@@ -1,6 +1,6 @@
 import orjson
 
-from zerver.lib.actions import do_create_user, do_mark_hotspot_as_read
+from zerver.lib.actions import do_create_user, do_mark_hotspot_as_read, do_reset_all_hotspots
 from zerver.lib.hotspots import ALL_HOTSPOTS, get_next_hotspots
 from zerver.lib.test_classes import ZulipTestCase
 from zerver.models import UserHotspot, UserProfile, get_realm
@@ -48,6 +48,12 @@ class TestHotspots(ZulipTestCase):
         self.assertEqual(list(UserHotspot.objects.filter(user=user)
                               .values_list('hotspot', flat=True)), ['intro_compose'])
 
+    def test_do_reset_all_hotspots(self) -> None:
+        user = self.example_user('hamlet')
+        do_reset_all_hotspots(user)
+        self.assertEqual(user.tutorial_status, UserProfile.TUTORIAL_STARTED)
+        self.assertEqual(len(list(UserHotspot.objects.filter(user=user))), 0)
+
     def test_hotspots_url_endpoint(self) -> None:
         user = self.example_user('hamlet')
         self.login_user(user)
@@ -62,3 +68,9 @@ class TestHotspots(ZulipTestCase):
         self.assert_json_error(result, "Unknown hotspot: invalid")
         self.assertEqual(list(UserHotspot.objects.filter(user=user)
                               .values_list('hotspot', flat=True)), ['intro_reply'])
+
+    def test_reset_all_hotspots_endpoint(self) -> None:
+        user = self.example_user('hamlet')
+        self.login_user(user)
+        result = self.client_post('/json/users/me/reset_hotspots')
+        self.assert_json_success(result)

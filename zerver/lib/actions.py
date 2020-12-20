@@ -5582,6 +5582,13 @@ def do_mark_hotspot_as_read(user: UserProfile, hotspot: str) -> None:
     event = dict(type="hotspots", hotspots=get_next_hotspots(user))
     send_event(user.realm, event, [user.id])
 
+def do_reset_all_hotspots(user: UserProfile) -> None:
+    user.tutorial_status = UserProfile.TUTORIAL_STARTED
+    user.save(update_fields=['tutorial_status'])
+    UserHotspot.objects.filter(user=user).delete()
+    event = dict(type="hotspots", hotspots=get_next_hotspots(user))
+    send_event(user.realm, event, [user.id])
+
 def notify_realm_filters(realm: Realm) -> None:
     realm_filters = realm_filters_for_realm(realm.id)
     event = dict(type="realm_filters", realm_filters=realm_filters)
