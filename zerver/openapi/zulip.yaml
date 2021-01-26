@@ -1859,11 +1859,16 @@ paths:
                                     filters][linkification-filters] that match content in the
                                     message's topic.)
 
-                                    **Changes**: New in Zulip 3.0 (feature level 1).
-                                    Previously, this field was called `subject_links`;
-                                    clients are recommended to rename `subject_links`
-                                    to `topic_links` if present for compatibility with
-                                    older Zulip servers.
+                                    **Changes**: New in Zulip 4.0 (feature level 38).
+                                      Previously, this field returned a list of urls. Now,
+                                      it contains a list of dictionaries containing the matched
+                                      url and text for each link in the `topic`.
+
+                                      New in Zulip 3.0 (feature level 1).
+                                      Previously, this field was called `subject_links`;
+                                      clients are recommended to rename `subject_links`
+                                      to `topic_links` if present for compatibility with
+                                      older Zulip servers.
                                 message_ids:
                                   type: array
                                   items:
@@ -9673,11 +9678,16 @@ components:
             filters][linkification-filters] that match content in the
             message's topic.)
 
-            **Changes**: New in Zulip 3.0 (feature level 1).
-            Previously, this field was called `subject_links`;
-            clients are recommended to rename `subject_links`
-            to `topic_links` if present for compatibility with
-            older Zulip servers.
+            **Changes**: New in Zulip 4.0 (feature level 38).
+              Previously, this field returned a list of urls. Now,
+              it contains a list of dictionaries containing the matched
+              url and text for each link in the `topic`.
+
+              New in Zulip 3.0 (feature level 1).
+              Previously, this field was called `subject_links`;
+              clients are recommended to rename `subject_links`
+              to `topic_links` if present for compatibility with
+              older Zulip servers.
         submessages:
           type: array
           items:
