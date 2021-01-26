@@ -982,15 +982,18 @@ class MarkdownTest(ZulipTestCase):
 
         msg.set_topic_name("https://google.com/hello-world")
         converted_topic = topic_links(realm.id, msg.topic_name())
-        self.assertEqual(converted_topic, ['https://google.com/hello-world'])
+        self.assertEqual(converted_topic, [{'url': 'https://google.com/hello-world',
+                                            'text': 'https://google.com/hello-world'}])
 
         msg.set_topic_name("http://google.com/hello-world")
         converted_topic = topic_links(realm.id, msg.topic_name())
-        self.assertEqual(converted_topic, ['http://google.com/hello-world'])
+        self.assertEqual(converted_topic, [{'url': 'http://google.com/hello-world',
+                                            'text': 'http://google.com/hello-world'}])
 
         msg.set_topic_name("Without scheme google.com/hello-world")
         converted_topic = topic_links(realm.id, msg.topic_name())
-        self.assertEqual(converted_topic, ['https://google.com/hello-world'])
+        self.assertEqual(converted_topic, [{'url': 'https://google.com/hello-world',
+                                            'text': 'https://google.com/hello-world'}])
 
         msg.set_topic_name("Without scheme random.words/hello-world")
         converted_topic = topic_links(realm.id, msg.topic_name())
@@ -998,7 +1001,9 @@ class MarkdownTest(ZulipTestCase):
 
         msg.set_topic_name("Try out http://ftp.debian.org, https://google.com/ and https://google.in/.")
         converted_topic = topic_links(realm.id, msg.topic_name())
-        self.assertEqual(converted_topic, ['http://ftp.debian.org', 'https://google.com/', 'https://google.in/'])
+        self.assertEqual(converted_topic, [{'url': 'http://ftp.debian.org', 'text': 'http://ftp.debian.org'},
+                                           {'url': 'https://google.com/', 'text': 'https://google.com/'},
+                                           {'url': 'https://google.in/', 'text': 'https://google.in/'}])
 
     def test_realm_patterns(self) -> None:
         realm = get_realm('zulip')
@@ -1022,11 +1027,12 @@ class MarkdownTest(ZulipTestCase):
         converted_topic = topic_links(realm.id, msg.topic_name())
 
         self.assertEqual(converted, '<p>We should fix <a href="https://trac.example.com/ticket/224">#224</a> and <a href="https://trac.example.com/ticket/115">#115</a>, but not issue#124 or #1124z or <a href="https://trac.example.com/ticket/16">trac #15</a> today.</p>')
-        self.assertEqual(converted_topic, ['https://trac.example.com/ticket/444'])
+        self.assertEqual(converted_topic, [{'url': 'https://trac.example.com/ticket/444', 'text': '#444'}])
 
         msg.set_topic_name("#444 https://google.com")
         converted_topic = topic_links(realm.id, msg.topic_name())
-        self.assertEqual(converted_topic, ['https://trac.example.com/ticket/444', 'https://google.com'])
+        self.assertEqual(converted_topic, [{'url': 'https://trac.example.com/ticket/444', 'text': '#444'},
+                                           {'url': 'https://google.com', 'text': 'https://google.com'}])
 
         RealmFilter(realm=realm, pattern=r'#(?P<id>[a-zA-Z]+-[0-9]+)',
                     url_format_string=r'https://trac.example.com/ticket/%(id)s').save()
@@ -1043,7 +1049,7 @@ class MarkdownTest(ZulipTestCase):
             if should_have_converted:
                 self.assertTrue('https://trac.example.com' in converted)
                 self.assertEqual(len(converted_topic), 1)
-                self.assertTrue('https://trac.example.com' in converted_topic[0])
+                self.assertEqual(converted_topic[0], {'url': 'https://trac.example.com/ticket/123', 'text': '#123'})
             else:
                 self.assertTrue('https://trac.example.com' not in converted)
                 self.assertEqual(len(converted_topic), 0)
@@ -1069,7 +1075,9 @@ class MarkdownTest(ZulipTestCase):
         RealmFilter(realm=realm, pattern=r'hello#(?P<id>[0-9]+)',
                     url_format_string=r'https://trac.example.com/hello/%(id)s').save()
         converted_topic = topic_links(realm.id, 'hello#123 #234')
-        self.assertEqual(converted_topic, ['https://trac.example.com/ticket/234', 'https://trac.example.com/hello/123'])
+        self.assertEqual(converted_topic, [
+            {'url': 'https://trac.example.com/hello/123', 'text': 'hello#123'},
+            {'url': 'https://trac.example.com/ticket/234', 'text': '#234'}])
 
     def test_multiple_matching_realm_patterns(self) -> None:
         realm = get_realm('zulip')
@@ -1106,7 +1114,8 @@ class MarkdownTest(ZulipTestCase):
         # There was no easy way to support parsing both filters and not run into an infinite loop, hence the second filter is ignored.
         self.assertEqual(converted, '<p>We should fix <a href="https://trac.example.com/ticket/ABC-123">ABC-123</a> or <a href="https://trac.example.com/ticket/16">trac ABC-123</a> today.</p>')
         # Both the links should be generated in topics.
-        self.assertEqual(converted_topic, ['https://trac.example.com/ticket/ABC-123', 'https://other-trac.example.com/ticket/ABC-123'])
+        self.assertEqual(converted_topic, [{'url': 'https://trac.example.com/ticket/ABC-123', 'text': 'ABC-123'},
+                                           {'url': 'https://other-trac.example.com/ticket/ABC-123', 'text': 'ABC-123'}])
 
     def test_maybe_update_markdown_engines(self) -> None:
         realm = get_realm('zulip')
