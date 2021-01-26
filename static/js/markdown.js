@@ -210,7 +210,7 @@ exports.add_topic_links = function (message) {
         return;
     }
     const topic = message.topic;
-    let links = [];
+    const links = [];
 
     for (const realm_filter of realm_filter_list) {
         const pattern = realm_filter[0];
@@ -227,17 +227,24 @@ exports.add_topic_links = function (message) {
                 link_url = link_url.replace(back_ref, matched_group);
                 i += 1;
             }
-            links.push(link_url);
+            // We store the starting index as well, to sort the order of occurence of the links
+            // in the topic, similar to the logic implemeted in zerver/lib/markdown/__init__.py
+            links.push({url: link_url, text: match[0], index: topic.indexOf(match[0])});
         }
     }
 
     // Also make raw URLs navigable
     const url_re = /\b(https?:\/\/[^\s<]+[^\s"'),.:;<\]])/g; // Slightly modified from third/marked.js
-    const match = topic.match(url_re);
-    if (match) {
-        links = links.concat(match);
+    const matches = topic.match(url_re);
+    if (matches) {
+        for (const match of matches) {
+            links.push({url: match, text: match, index: topic.indexOf(match)});
+        }
     }
-
+    links.sort((a, b) => a.index - b.index);
+    for (const match of links) {
+        delete match.index;
+    }
     message.topic_links = links;
 };
 
